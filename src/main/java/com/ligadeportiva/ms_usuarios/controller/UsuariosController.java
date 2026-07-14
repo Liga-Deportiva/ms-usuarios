@@ -2,6 +2,8 @@ package com.ligadeportiva.ms_usuarios.controller;
 
 import com.ligadeportiva.ms_usuarios.dto.CambiarPasswordRequest;
 import com.ligadeportiva.ms_usuarios.dto.LoginRequest;
+import com.ligadeportiva.ms_usuarios.dto.RegistroUsuarioRequest;
+import com.ligadeportiva.ms_usuarios.dto.UsuarioResponseDTO;
 import com.ligadeportiva.ms_usuarios.modelo.Rol;
 import com.ligadeportiva.ms_usuarios.modelo.Usuarios;
 import com.ligadeportiva.ms_usuarios.service.UsuariosService;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
+@RequestMapping("/usuarios")
 public class UsuariosController {
 
     @Autowired
@@ -19,39 +23,38 @@ public class UsuariosController {
 
     // 1. CREAR
     @PostMapping
-    public ResponseEntity<Usuarios> registrar(@RequestBody Usuarios usuario) {
-        Usuarios creado = usuariosService.registrarUsuario(usuario);
+    public ResponseEntity<UsuarioResponseDTO> registrar(@RequestBody RegistroUsuarioRequest request) {
+        UsuarioResponseDTO creado = usuariosService.registrarUsuario(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
     // 2. LEER UNO (por id)
     @GetMapping("/{id}")
-    public ResponseEntity<Usuarios> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<UsuarioResponseDTO> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(usuariosService.obtenerUsuarioPorId(id));
     }
 
     // 3. LEER UNO (por rut)
     @GetMapping("/rut/{rut}")
-    public ResponseEntity<Usuarios> obtenerPorRut(@PathVariable String rut) {
+    public ResponseEntity<UsuarioResponseDTO> obtenerPorRut(@PathVariable String rut) {
         return ResponseEntity.ok(usuariosService.obtenerUsuarioPorRut(rut));
     }
 
     // 4. LEER TODOS
     @GetMapping
-    public ResponseEntity<List<Usuarios>> listarTodos() {
-
+    public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
         return ResponseEntity.ok(usuariosService.listarUsuarios());
     }
 
     // 5. LEER POR ROL
     @GetMapping("/rol/{rol}")
-    public ResponseEntity<List<Usuarios>> listarPorRol(@PathVariable Rol rol) {
+    public ResponseEntity<List<UsuarioResponseDTO>> listarPorRol(@PathVariable Rol rol) {
         return ResponseEntity.ok(usuariosService.listarUsuariosPorRol(rol));
     }
 
     // 6. ACTUALIZAR
     @PutMapping("/{id}")
-    public ResponseEntity<Usuarios> actualizar(@PathVariable Long id, @RequestBody Usuarios usuario) {
+    public ResponseEntity<UsuarioResponseDTO> actualizar(@PathVariable Long id, @RequestBody Usuarios usuario) {
         return ResponseEntity.ok(usuariosService.actualizarUsuario(id, usuario));
     }
 

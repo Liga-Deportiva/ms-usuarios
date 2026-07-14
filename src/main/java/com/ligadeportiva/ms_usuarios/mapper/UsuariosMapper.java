@@ -1,9 +1,10 @@
 package com.ligadeportiva.ms_usuarios.mapper;
 
+import com.ligadeportiva.ms_usuarios.dto.RegistroUsuarioRequest;
 import com.ligadeportiva.ms_usuarios.dto.UsuarioResponseDTO;
 import com.ligadeportiva.ms_usuarios.modelo.Usuarios;
 import org.mapstruct.Mapper;
-import org.springframework.web.bind.annotation.Mapping;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UsuariosMapper {
