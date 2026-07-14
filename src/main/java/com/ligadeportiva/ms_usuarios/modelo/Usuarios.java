@@ -23,7 +23,7 @@ public class Usuarios {
     private String correoUsuarios;
 
     private LocalDate fechaNacimiento;
-    private String contraseñaUsuarios;
+    private String passwordUsuarios;
 
     @Enumerated(EnumType.STRING)
     private Rol rol;

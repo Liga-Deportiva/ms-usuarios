@@ -1,5 +1,6 @@
 package com.ligadeportiva.ms_usuarios.service;
 
+import com.ligadeportiva.ms_usuarios.dto.UsuarioResponseDTO;
 import com.ligadeportiva.ms_usuarios.exception.CorreoDuplicadoException;
 import com.ligadeportiva.ms_usuarios.exception.RutDuplicadoException;
 import com.ligadeportiva.ms_usuarios.exception.UsuarioNoEncontrado;
@@ -65,18 +66,18 @@ public class UsuariosService {
             throw new RuntimeException("Usuario inactivo");
         }
 
-        return passwordEncoder.matches(passwordIngresado, usuario.getContraseñaUsuarios());
+        return passwordEncoder.matches(passwordIngresado, usuario.getPasswordUsuarios());
     }
 
     // 7. CAMBIAR CONTRASEÑA (usuario logueado)
     public void cambiarPassword(Long id, String passwordActual, String passwordNueva) {
         Usuarios usuario = obtenerUsuarioPorId(id);
 
-        if (!passwordEncoder.matches(passwordActual, usuario.getContraseñaUsuarios())) {
+        if (!passwordEncoder.matches(passwordActual, usuario.getPasswordUsuarios())) {
             throw new RuntimeException("La contraseña actual no coincide");
         }
 
-        usuario.setContraseñaUsuarios(passwordEncoder.encode(passwordNueva));
+        usuario.setPasswordUsuarios(passwordEncoder.encode(passwordNueva));
         usuariosRepository.save(usuario);
     }
 
@@ -95,4 +96,19 @@ public class UsuariosService {
                 .filter(Usuarios::getActivo)
                 .orElseThrow(() -> new UsuarioNoEncontrado(rut));
     }
+
+    // mapeo
+    private UsuarioResponseDTO convertirADTO(Usuarios usuario) {
+        return new UsuarioResponseDTO(
+                usuario.getIdUsuarios(),
+                usuario.getNombreUsuarios(),
+                usuario.getApellidoUsuarios(),
+                usuario.getRutUsuarios(),
+                usuario.getCorreoUsuarios(),
+                usuario.getRol()
+        );
+    }
+
+
+
 }
