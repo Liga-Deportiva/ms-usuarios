@@ -1,5 +1,6 @@
 package com.ligadeportiva.ms_usuarios.service;
 
+import com.ligadeportiva.ms_usuarios.dto.ActualizarUsuarioRequest;
 import com.ligadeportiva.ms_usuarios.dto.RegistroUsuarioRequest;
 import com.ligadeportiva.ms_usuarios.dto.UsuarioResponseDTO;
 import com.ligadeportiva.ms_usuarios.exception.CorreoDuplicadoException;
@@ -47,8 +48,8 @@ public class UsuariosService {
     }
 
     // 4. ACTUALIZAR
-    public UsuarioResponseDTO actualizarUsuario(Long id, Usuarios datosNuevos) {
-        Usuarios usuario = buscarEntidadPorId(id); // <- entidad completa, no el DTO
+    public UsuarioResponseDTO actualizarUsuario(Long id, ActualizarUsuarioRequest datosNuevos) {
+        Usuarios usuario = buscarEntidadPorId(id);
 
         usuario.setNombreUsuarios(datosNuevos.getNombreUsuarios());
         usuario.setApellidoUsuarios(datosNuevos.getApellidoUsuarios());
