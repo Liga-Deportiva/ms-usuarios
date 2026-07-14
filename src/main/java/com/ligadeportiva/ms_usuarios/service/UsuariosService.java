@@ -1,12 +1,17 @@
 package com.ligadeportiva.ms_usuarios.service;
 
+import com.ligadeportiva.ms_usuarios.exception.CorreoDuplicadoException;
+import com.ligadeportiva.ms_usuarios.exception.RutDuplicadoException;
 import com.ligadeportiva.ms_usuarios.exception.UsuarioNoEncontrado;
+import com.ligadeportiva.ms_usuarios.modelo.Rol;
 import com.ligadeportiva.ms_usuarios.modelo.Usuarios;
 import com.ligadeportiva.ms_usuarios.repository.UsuariosRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -18,32 +23,76 @@ public class UsuariosService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // 1. CREAR
     public Usuarios registrarUsuario(Usuarios usuario) {
         if (usuariosRepository.existsByCorreoUsuarios(usuario.getCorreoUsuarios())) {
-            throw new RuntimeException("El correo ya está registrado");
+            throw new CorreoDuplicadoException(usuario.getCorreoUsuarios());
         }
         if (usuariosRepository.existsByRutUsuarios(usuario.getRutUsuarios())) {
-            throw new RuntimeException("El RUT ya está registrado");
+            throw new RutDuplicadoException(usuario.getRutUsuarios());
         }
+        usuario.setCorreoUsuarios(passwordEncoder.encode(usuario.getCorreoUsuarios()));
+        usuario.setActivo(true);
+        return usuariosRepository.save(usuario);
+    }
 
-        // Hashear el password ANTES de guardar
-        String passwordHasheado = passwordEncoder.encode(usuario.getContraseñaUsuarios());
-        usuario.setContraseñaUsuarios(passwordHasheado);
+    // 4. ACTUALIZAR
+    public Usuarios actualizarUsuario(Long id, Usuarios datosNuevos) {
+        Usuarios usuario = obtenerUsuarioPorId(id);
+
+        usuario.setNombreUsuarios(datosNuevos.getNombreUsuarios());
+        usuario.setApellidoUsuarios(datosNuevos.getApellidoUsuarios());
+        usuario.setCorreoUsuarios(datosNuevos.getCorreoUsuarios());
+        usuario.setFechaNacimiento(datosNuevos.getFechaNacimiento());
+        // el password NO se actualiza aquí, tiene su propio método
 
         return usuariosRepository.save(usuario);
     }
 
+    // 5. ELIMINAR (lógico)
+    public void eliminarUsuario(Long id) {
+        Usuarios usuario = obtenerUsuarioPorId(id);
+        usuario.setActivo(false);
+        usuariosRepository.save(usuario);
+    }
+
+    // 6. VALIDAR LOGIN
     public boolean validarLogin(String correo, String passwordIngresado) {
         Usuarios usuario = usuariosRepository.findByCorreoUsuarios(correo)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        if (!usuario.getActivo()) {
+            throw new RuntimeException("Usuario inactivo");
+        }
+
         return passwordEncoder.matches(passwordIngresado, usuario.getContraseñaUsuarios());
     }
 
-    public void eliminarUsuario (Long id){
-        Usuarios usuarios = usuariosRepository.findById(id).orElseThrow(() -> new UsuarioNoEncontrado("No se pudo eliminar: Pago no encontrado con ID: " + id);
-        usuariosRepository.delete(usuarios);
-        log.info("Pago eliminado físicamente de la base de datos: ID {}", id);
+    // 7. CAMBIAR CONTRASEÑA (usuario logueado)
+    public void cambiarPassword(Long id, String passwordActual, String passwordNueva) {
+        Usuarios usuario = obtenerUsuarioPorId(id);
 
+        if (!passwordEncoder.matches(passwordActual, usuario.getContraseñaUsuarios())) {
+            throw new RuntimeException("La contraseña actual no coincide");
+        }
+
+        usuario.setContraseñaUsuarios(passwordEncoder.encode(passwordNueva));
+        usuariosRepository.save(usuario);
+    }
+
+    // 8. LISTAR POR ROL
+    public List<Usuarios> listarUsuariosPorRol(Rol rol) {
+        return usuariosRepository.findByRolAndActivoTrue(rol);
+    }
+
+    public Usuarios obtenerUsuarioPorId(Long id) {
+        return usuariosRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNoEncontrado(id));
+    }
+
+    public Usuarios obtenerUsuarioPorRut(String rut) {
+        return usuariosRepository.findByRutUsuarios(rut)
+                .filter(Usuarios::getActivo)
+                .orElseThrow(() -> new UsuarioNoEncontrado(rut));
     }
 }

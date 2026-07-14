@@ -28,4 +28,6 @@ public class Usuarios {
     @Enumerated(EnumType.STRING)
     private Rol rol;
 
+    private Boolean activo = true;
+
 }
