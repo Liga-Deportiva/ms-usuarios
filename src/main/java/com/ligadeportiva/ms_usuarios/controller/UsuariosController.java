@@ -1,9 +1,6 @@
 package com.ligadeportiva.ms_usuarios.controller;
 
-import com.ligadeportiva.ms_usuarios.dto.CambiarPasswordRequest;
-import com.ligadeportiva.ms_usuarios.dto.LoginRequest;
-import com.ligadeportiva.ms_usuarios.dto.RegistroUsuarioRequest;
-import com.ligadeportiva.ms_usuarios.dto.UsuarioResponseDTO;
+import com.ligadeportiva.ms_usuarios.dto.*;
 import com.ligadeportiva.ms_usuarios.modelo.Rol;
 import com.ligadeportiva.ms_usuarios.modelo.Usuarios;
 import com.ligadeportiva.ms_usuarios.service.UsuariosService;
@@ -54,8 +51,8 @@ public class UsuariosController {
 
     // 6. ACTUALIZAR
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> actualizar(@PathVariable Long id, @RequestBody Usuarios usuario) {
-        return ResponseEntity.ok(usuariosService.actualizarUsuario(id, usuario));
+    public ResponseEntity<UsuarioResponseDTO> actualizar(@PathVariable Long id, @RequestBody ActualizarUsuarioRequest request) {
+        return ResponseEntity.ok(usuariosService.actualizarUsuario(id, request));
     }
 
     // 7. ELIMINAR (lógico)

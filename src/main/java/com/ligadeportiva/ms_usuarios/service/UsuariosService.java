@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -98,7 +99,7 @@ public class UsuariosService {
         return usuariosRepository.findByRolAndActivoTrue(rol)
                 .stream()
                 .map(usuariosMapper::toDTO)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     // USO INTERNO del Service (entidad completa)
@@ -123,7 +124,7 @@ public class UsuariosService {
         return usuariosRepository.findByActivoTrue()
                 .stream()
                 .map(usuariosMapper::toDTO)
-                .toList();
+                .collect(Collectors.toList());
     }
 
 
